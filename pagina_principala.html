@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pagina principală</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <style>
+    /* Stilizare pentru interfața profesională */
+    body {
+      background-color: #f2f2f2;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .qr-code {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    #qrcode {
+      width: 200px;
+      height: 200px;
+    }
+
+    .loyalty-points {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .loyalty-point {
+      width: 50px;
+      height: 50px;
+      background-color: #d4d4d4;
+      border-radius: 50%;
+      margin: 0 5px;
+    }
+
+    .loyalty-point.active {
+      background-color: #ffcc00;
+    }
+
+    .loyalty-point-card {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 200px;
+      height: 200px;
+      background-color: #d4d4d4;
+      border-radius: 10px;
+      margin: 0 auto;
+      margin-bottom: 20px;
+    }
+
+    .loyalty-point-card.active {
+      background-color: #ffcc00;
+    }
+
+    .loyalty-point-card p {
+      color: #fff;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Pagina principală</h1>
+
+    <div class="qr-code">
+      <div id="qrcode"></div>
+    </div>
+
+    <div class="loyalty-points">
+      <div class="loyalty-point"></div>
+      <div class="loyalty-point"></div>
+      <div class="loyalty-point"></div>
+      <div class="loyalty-point"></div>
+      <div class="loyalty-point"></div>
+      <div class="loyalty-point"></div>
+      <div class="loyalty-point"></div>
+    </div>
+
+    <div class="loyalty-point-card">
+      <p>Card cu puncte</p>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <script>
+    // Inițializarea Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Obțineți utilizatorul curent autentificat
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        const userId = user.uid;
+
+        // Obțineți referința la documentul utilizatorului în colecția "users"
+        const userDocumentRef = firebase.firestore().collection("users").doc(userId);
+
+        // Ascultați evenimentul pentru schimbările în documentul utilizatorului
+        userDocumentRef.onSnapshot((doc) => {
+          if (doc.exists) {
+            const userData = doc.data();
+            const qrCodeValue = userData.qrCodeValue;
+            const points = userData.points;
+            const scannedPoints = userData.scannedPoints;
+
+            // Actualizați codul QR cu valoarea unică a utilizatorului
+            generateQRCode(qrCodeValue);
+
+            // Actualizați punctele de loialitate și cardul de puncte
+            updateLoyaltyPoints(points, scannedPoints);
+          }
+        });
+      }
+    });
+
+    // Generați codul QR cu valoarea unică a utilizatorului
+    function generateQRCode(qrCodeValue) {
+      const qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML = ""; // Golește containerul codului QR existent
+
+      const qrCode = new QRCode(qrContainer, {
+        text: qrCodeValue,
+        width: 200,
+        height: 200
+      });
+    }
+
+    // Actualizați punctele de loialitate și cardul de puncte
+    function updateLoyaltyPoints(points, scannedPoints) {
+      const loyaltyPoints = document.querySelectorAll(".loyalty-point");
+      let pointsCount = scannedPoints;
+
+      // Actualizați punctele active
+      loyaltyPoints.forEach((point, index) => {
+        if (index < pointsCount) {
+          point.classList.add("active");
+        } else {
+          point.classList.remove("active");
+        }
+      });
+
+      // Verificați dacă utilizatorul a câștigat un card special
+      if (pointsCount === 4) {
+        showDiscountCard(10);
+      } else if (pointsCount === 7) {
+        showFreeWashCard();
+      }
+    }
+
+    // Afișați cardul de reducere
+    function showDiscountCard(discountAmount) {
+      const discountCard = document.createElement("div");
+      discountCard.classList.add("loyalty-point-card", "active");
+      discountCard.innerHTML = `<p>Reducere ${discountAmount} lei</p>`;
+      document.body.appendChild(discountCard);
+    }
+
+    // Afișați cardul de spălare gratuită
+    function showFreeWashCard() {
+      const freeWashCard = document.createElement("div");
+      freeWashCard.classList.add("loyalty-point-card", "active");
+      freeWashCard.innerHTML = "<p>Spălare gratuită</p>";
+      document.body.appendChild(freeWashCard);
+    }
+
+    // Eveniment de scanare a codului QR
+    const qrContainer = document.getElementById("qrcode");
+    qrContainer.addEventListener("click", function(event) {
+      const scannedPoint = document.querySelector(".loyalty-point:not(.active)");
+
+      if (scannedPoint) {
+        scannedPoint.classList.add("active");
+        const userId = firebase.auth().currentUser.uid;
+
+        // Actualizați numărul de puncte scanate în baza de date
+        const userDocumentRef = firebase.firestore().collection("users").doc(userId);
+        userDocumentRef.update({ scannedPoints: firebase.firestore.FieldValue.increment(1) });
+      }
+    });
+  </script>
+</body>
+</html>

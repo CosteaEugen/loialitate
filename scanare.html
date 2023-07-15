@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scanare cod QR</title>
+  <style>
+    /* Stilurile CSS așa cum le-ai definit */
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Scanare cod QR</h1>
+    <p>Folosește camera dispozitivului tău pentru a scana un cod QR.</p>
+    <video id="qrVideo" playsinline autoplay></video>
+    <button id="scanButton" onclick="startScanning()">Începe scanarea</button>
+  </div>
+
+  <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
+  <script>
+    // Verificăm dacă utilizatorul utilizează un dispozitiv mobil
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Funcție pentru a verifica dacă permisiunea pentru cameră a fost deja acordată
+    function hasCameraPermission() {
+      return localStorage.getItem('cameraPermission') === 'granted';
+    }
+
+    // Funcție pentru a acorda permisiunea pentru cameră
+    function requestCameraPermission() {
+      return new Promise((resolve, reject) => {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+          .then(function(stream) {
+            // Camera este disponibilă și permisiunea a fost acordată
+            localStorage.setItem('cameraPermission', 'granted');
+            const video = document.getElementById('qrVideo'); // Modificare: definim variabila video aici
+            video.srcObject = stream;
+            video.play();
+            console.log('Permisiunea pentru cameră a fost acordată.');
+            resolve();
+          })
+          .catch(function(error) {
+            // A apărut o eroare la cererea de permisiune pentru cameră
+            console.error('Eroare la cererea de permisiune pentru cameră:', error);
+            reject(error);
+          });
+      });
+    }
+
+    // Funcție pentru a iniția scanarea
+    function startScanning() {
+      const video = document.getElementById('qrVideo');
+      const scanButton = document.getElementById('scanButton');
+
+      if (!hasCameraPermission()) {
+        // Dacă utilizatorul nu a acordat încă permisiunea, o solicităm acum
+        requestCameraPermission()
+          .then(() => {
+            // Permisiunea pentru cameră a fost acordată, putem iniția scanarea
+            scanButton.disabled = true; // Dezactivăm butonul pentru a evita apăsări multiple
+            const codeReader = new ZXing.BrowserQRCodeReader();
+            codeReader.decodeFromVideoDevice(undefined, 'qrVideo', (result, err) => {
+              if (result) {
+                // S-a găsit un cod QR
+                console.log('QR code scanned:', result.text);
+                // Aici poți adăuga acțiuni suplimentare cu datele scanate, cum ar fi trimiterea lor către server
+
+                // Oprește scanarea după ce s-a găsit un cod QR
+                codeReader.stopContinuousDecode();
+              } else if (err) {
+                // Eroare la scanare
+                console.error('Eroare la scanarea codului QR:', err);
+              }
+              scanButton.disabled = false; // Re-activăm butonul după ce scanarea s-a încheiat
+            });
+          })
+          .catch((error) => {
+            // Manejăm eroarea de la cererea de permisiune pentru cameră
+            console.error('Eroare la inițierea scanării:', error);
+            scanButton.disabled = false; // Re-activăm butonul în caz de eroare
+          });
+      } else {
+        // Permisiunea pentru cameră a fost deja acordată, putem iniția scanarea direct
+        const codeReader = new ZXing.BrowserQRCodeReader();
+        codeReader.decodeFromVideoDevice(undefined, 'qrVideo', (result, err) => {
+          if (result) {
+            // S-a găsit un cod QR
+            console.log('QR code scanned:', result.text);
+            // Aici poți adăuga acțiuni suplimentare cu datele scanate, cum ar fi trimiterea lor către server
+
+            // Oprește scanarea după ce s-a găsit un cod QR
+            codeReader.stopContinuousDecode();
+          } else if (err) {
+            // Eroare la scanare
+            console.error('Eroare la scanarea codului QR:', err);
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>

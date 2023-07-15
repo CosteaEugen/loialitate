@@ -1,0 +1,69 @@
+body {
+    background-color: rgb(35, 1, 120);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .container {
+    max-width: 400px;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: rgb(79, 25, 193);
+  }
+  
+  .form-group label {
+    color: rgb(79, 25, 193);
+    font-weight: bold;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid rgb(79, 25, 193);
+    margin-bottom: 15px;
+  }
+  
+  .form-group button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    background-color: rgb(79, 25, 193);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .form-group p {
+    text-align: center;
+    margin-top: 15px;
+  }
+  
+  .form-group a {
+    color: rgb(79, 25, 193);
+    text-decoration: none;
+  }
+  .logo {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 50px;
+    height: 50px;
+  }
+  .loyalty-point.scanned {
+    background-color: red;
+  }
+  

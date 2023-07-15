@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Autentificare</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <style>
+    body {
+      background-color: rgb(35, 1, 120);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      max-width: 400px;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .container h1 {
+      text-align: center;
+      color: rgb(79, 25, 193);
+    }
+
+    #message {
+      text-align: center;
+      color: red;
+      margin-bottom: 10px;
+    }
+
+    #loginForm {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #loginForm input {
+      margin-bottom: 15px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid rgb(79, 25, 193);
+    }
+
+    #loginForm button {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      background-color: rgb(79, 25, 193);
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Autentificare</h1>
+    <div id="message"></div>
+    <form id="loginForm">
+      <input type="email" placeholder="Email" id="emailField" required><br>
+      <input type="password" placeholder="Parola" id="passwordField" required><br>
+      <button type="submit">Autentificare</button>
+    </form>
+  </div>
+
+  <!-- Firebase JavaScript SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script>
+    // Inițializarea Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Obținerea referinței la elementele formularului
+    const loginForm = document.getElementById('loginForm');
+    const emailField = document.getElementById('emailField');
+    const passwordField = document.getElementById('passwordField');
+    const message = document.getElementById('message');
+
+    // Evenimentul de autentificare a utilizatorului
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = emailField.value;
+      const password = passwordField.value;
+
+      // Autentificarea utilizatorului prin adresa de email și parola
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          if (user.email === "costea_gen@yahoo.com" && password === "finishtouch99") {
+            // Autentificare cu succes - redirecționează către pagina de scanare
+            window.location.href = 'scanare.html';
+          } else {
+            // Mesaj de eroare pentru date incorecte
+            message.textContent = 'Email sau parolă incorectă!';
+            message.style.color = 'red';
+          }
+        })
+        .catch((error) => {
+          // Afișarea mesajului de eroare în caz de eșec
+          message.textContent = error.message;
+          message.style.color = 'red';
+        });
+    });
+  </script>
+</body>
+</html>
