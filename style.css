@@ -66,4 +66,57 @@ body {
   .loyalty-point.scanned {
     background-color: red;
   }
+  body {
+    font-family: sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+  }
+  
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  video {
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  #qrResult {
+    display: none;
+    background-color: #fff;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  
+  #qrResult p {
+    margin: 0;
+    padding: 0;
+  }
+  
+  #qrResult strong {
+    font-weight: bold;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
   

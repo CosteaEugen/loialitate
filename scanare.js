@@ -1,65 +1,26 @@
-const qrcode = window.qrcode;
+document.addEventListener("DOMContentLoaded", function() {
+  const startScanBtn = document.getElementById("scanButton");
+  const qrResultDiv = document.getElementById("qrResult");
+  const qrText = document.getElementById("qrText");
 
-const video = document.createElement("video");
-const canvasElement = document.getElementById("qr-canvas");
-const canvas = canvasElement.getContext("2d");
-
-const qrResult = document.getElementById("qr-result");
-const outputData = document.getElementById("outputData");
-const btnScanQR = document.getElementById("btn-scan-qr");
-
-let scanning = false;
-
-qrcode.callback = (res) => {
-  if (res instanceof Error) {
-    console.error("Error decoding QR Code:", res);
-    alert("Error decoding QR Code. Please try again.");
-  } else {
-    outputData.innerText = res;
-    scanning = false;
-
-    video.srcObject.getTracks().forEach(track => {
-      track.stop();
-    });
-
-    qrResult.hidden = false;
-    btnScanQR.hidden = false;
-    canvasElement.hidden = true;
+  function displayScanResult(result) {
+    qrText.textContent = result;
+    qrResultDiv.style.display = "block";
   }
-};
 
-function tick() {
-  canvasElement.height = video.videoHeight;
-  canvasElement.width = video.videoWidth;
-  canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+  function startScan() {
+    const html5QrcodeScanner = new Html5QrcodeScanner(
+      "qrVideo",
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      (decodedText, decodedResult) => {
+        console.log(`Code scanned: ${decodedText}`, decodedResult);
+        displayScanResult(decodedText);
+        html5QrcodeScanner.clear();
+      }
+    );
 
-  scanning && requestAnimationFrame(tick);
-}
-
-function scan() {
-  try {
-    qrcode.decode();
-  } catch (e) {
-    setTimeout(scan, 300);
+    html5QrcodeScanner.render(onScanSuccess);
   }
-}
 
-btnScanQR.onclick = () => {
-  navigator.mediaDevices
-    .getUserMedia({ video: { facingMode: "environment" } })
-    .then(function(stream) {
-      scanning = true;
-      qrResult.hidden = true;
-      btnScanQR.hidden = true;
-      canvasElement.hidden = false;
-      video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
-      video.srcObject = stream;
-      video.play();
-      tick();
-      scan();
-    })
-    .catch(function(error) {
-      console.error("Error accessing the camera:", error);
-      alert("Error accessing the camera. Please make sure you have granted camera permission and try again.");
-    });
-};
+  startScanBtn.addEventListener("click", startScan);
+});
