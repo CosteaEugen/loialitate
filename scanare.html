@@ -11,17 +11,20 @@
     <h1>Scanare cod QR</h1>
     <p>Folosește camera dispozitivului tău pentru a scana un cod QR.</p>
     <video id="qrVideo" playsinline autoplay></video>
-    <button id="startScan">Începe scanarea</button>
+    <button id="scanButton">Începe scanarea</button>
     <div id="qrResult" style="margin-top: 10px;"></div>
   </div>
 
-  <script src="https://unpkg.com/@zxing/library@0.17.0/umd/index.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      const startScanBtn = document.getElementById("startScan");
+      const scanButton = document.getElementById("scanButton");
       const qrResultDiv = document.getElementById("qrResult");
-      const video = document.getElementById("qrVideo");
-      let codeReader;
+      const html5QrcodeScanner = new Html5QrcodeScanner(
+        "qrVideo",
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        /* verbose= */ false
+      );
 
       // Function to display the scan result
       function displayScanResult(result) {
@@ -31,35 +34,17 @@
         `;
       }
 
-      // Function to request camera permission and start scanning
-      function startScan() {
-        // Opțiuni pentru scanarea codului QR
-        const hints = new Map();
-        hints.set(ZXing.BarcodeFormat.QR_CODE, {});
-        const formats = [ZXing.BarcodeFormat.QR_CODE];
-
-        // Inițializare obiect Reader pentru scanarea codului QR
-        if (!codeReader) {
-          codeReader = new ZXing.BrowserMultiFormatReader();
-        }
-
-        // Pornirea camerei și scanarea codului QR
-        codeReader
-          .decodeOnceFromConstraints({ video: { facingMode: "environment" } }, "qrVideo", formats, (result, err) => {
-            if (result) {
-              // S-a găsit un cod QR
-              console.log('QR code scanned:', result.text);
-              displayScanResult(result.text);
-            } else if (err) {
-              // Eroare la scanare
-              console.error('Eroare la scanarea codului QR:', err);
-              alert("Eroare la scanarea codului QR. Te rugăm să încerci din nou.");
-            }
-          });
+      // Function to handle scan success
+      function onScanSuccess(decodedText, decodedResult) {
+        console.log(`Code matched = ${decodedText}`, decodedResult);
+        displayScanResult(decodedText);
+        html5QrcodeScanner.clear(); // Stop scanning after success
       }
 
       // Add click event to start scanning
-      startScanBtn.addEventListener("click", startScan);
+      scanButton.addEventListener("click", function() {
+        html5QrcodeScanner.render(onScanSuccess);
+      });
     });
   </script>
 </body>
