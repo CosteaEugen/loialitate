@@ -1,38 +1,65 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const qrResultDiv = document.getElementById("qr-result");
+const qrcode = window.qrcode;
 
-  // Funcție pentru a afișa rezultatul scanării
-  function displayScanResult(result) {
-    qrResultDiv.innerHTML = `
-      <p>Cod QR scanat:</p>
-      <p><strong>${result}</strong></p>
-    `;
+const video = document.createElement("video");
+const canvasElement = document.getElementById("qr-canvas");
+const canvas = canvasElement.getContext("2d");
+
+const qrResult = document.getElementById("qr-result");
+const outputData = document.getElementById("outputData");
+const btnScanQR = document.getElementById("btn-scan-qr");
+
+let scanning = false;
+
+qrcode.callback = (res) => {
+  if (res instanceof Error) {
+    console.error("Error decoding QR Code:", res);
+    alert("Error decoding QR Code. Please try again.");
+  } else {
+    outputData.innerText = res;
+    scanning = false;
+
+    video.srcObject.getTracks().forEach(track => {
+      track.stop();
+    });
+
+    qrResult.hidden = false;
+    btnScanQR.hidden = false;
+    canvasElement.hidden = true;
   }
+};
 
-  // Funcție pentru a iniția scanarea
-  function startScan() {
-    // Opțiuni pentru scanarea codului QR
-    const hints = new Map();
-    hints.set(BarcodeFormat.QR_CODE, {});
-    const formats = [BarcodeFormat.QR_CODE];
+function tick() {
+  canvasElement.height = video.videoHeight;
+  canvasElement.width = video.videoWidth;
+  canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
 
-    // Inițializare obiect Reader pentru scanarea codului QR
-    const codeReader = new Html5Qrcode.BrowserMultiFormatReader();
+  scanning && requestAnimationFrame(tick);
+}
 
-    // Pornirea camerei și scanarea codului QR
-    codeReader
-      .decodeFromInputVideoDevice(undefined, "qr-reader", formats, hints)
-      .then((result) => {
-        displayScanResult(result.text);
-        codeReader.reset();
-      })
-      .catch((error) => {
-        console.error("Eroare la scanarea codului QR:", error);
-        alert("Eroare la scanarea codului QR. Te rugăm să încerci din nou.");
-        codeReader.reset();
-      });
+function scan() {
+  try {
+    qrcode.decode();
+  } catch (e) {
+    setTimeout(scan, 300);
   }
+}
 
-  // Adaugă evenimentul de click pentru butonul de scanare
-  startScan();
-});
+btnScanQR.onclick = () => {
+  navigator.mediaDevices
+    .getUserMedia({ video: { facingMode: "environment" } })
+    .then(function(stream) {
+      scanning = true;
+      qrResult.hidden = true;
+      btnScanQR.hidden = true;
+      canvasElement.hidden = false;
+      video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+      video.srcObject = stream;
+      video.play();
+      tick();
+      scan();
+    })
+    .catch(function(error) {
+      console.error("Error accessing the camera:", error);
+      alert("Error accessing the camera. Please make sure you have granted camera permission and try again.");
+    });
+};

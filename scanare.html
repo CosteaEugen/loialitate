@@ -2,22 +2,25 @@
 <html>
 <head>
   <title>Scanare cod QR</title>
-  <style>
-    /* Add your CSS styles here if needed */
-    .container {
-      text-align: center;
-      margin-top: 50px;
-    }
-  </style>
+  <link rel="stylesheet" href="src/styles.css" />
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
 </head>
 <body>
-  <div class="container">
-    <h1>Scanare cod QR</h1>
-    <p>Folosește camera dispozitivului tău pentru a scana un cod QR.</p>
-    <div id="qr-reader" style="width: 600px"></div>
+  <div id="container">
+    <h1>QR Code Scanner</h1>
+
+    <a id="btn-scan-qr">
+      <img src="https://uploads.sitepoint.com/wp-content/uploads/2017/07/1499401426qr_icon.svg">
+    </a>
+
+    <canvas hidden="" id="qr-canvas"></canvas>
+
+    <div id="qr-result" hidden="">
+      <b>Data:</b> <span id="outputData"></span>
+    </div>
   </div>
 
-  <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+  <script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
   <script src="scanare.js"></script>
 </body>
 </html>
