@@ -1,71 +1,53 @@
-const qrcode = window.qrcode;
+const video = document.getElementById('qr-video');
+const qrResult = document.getElementById('qr-result');
+const outputData = document.getElementById('outputData');
 
-const video = document.createElement("video");
-const canvasElement = document.getElementById("qr-canvas");
-const canvas = canvasElement.getContext("2d");
+let scanner;
 
-const qrResult = document.getElementById("qrResult");
-const qrText = document.getElementById("qrText");
-const scanButton = document.getElementById("scanButton");
+// Funcție pentru a iniția scanarea
+function startScan() {
+  qrResult.hidden = true;
 
-let scanning = false;
-
-// Function to handle camera access permission
-function requestCameraPermission() {
-  return navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-}
-
-// Function to start scanning
-function startScanning() {
-  requestCameraPermission()
-    .then((stream) => {
-      scanning = true;
-      qrResult.hidden = true;
-      canvasElement.hidden = false;
-      video.setAttribute("playsinline", true);
-      video.srcObject = stream;
-      video.play();
-      tick();
-    })
-    .catch((error) => {
-      console.error("Eroare la cererea de permisiune pentru cameră:", error);
-      alert("Nu s-a putut obține accesul la cameră. Te rugăm să accepți permisiunea pentru a putea scana codurile QR.");
-    });
-}
-
-// Set click event for the scan button
-scanButton.addEventListener("click", () => {
-  if (!scanning) {
-    startScanning();
-  }
-});
-
-// Callback for the QR code scanner
-qrcode.callback = (result) => {
-  if (result instanceof Error) {
-    setTimeout(scan, 300);
+  // Verificăm dacă browser-ul suportă funcția mediaDevices.getUserMedia
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // Obținem permisiunea pentru cameră
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then(function (stream) {
+        // Permisiunea pentru cameră a fost acordată
+        video.srcObject = stream;
+        scanner.start(video);
+      })
+      .catch(function (error) {
+        // A apărut o eroare la cererea de permisiune pentru cameră
+        console.error('Eroare la cererea de permisiune pentru cameră:', error);
+      });
   } else {
-    scanning = false;
-    video.srcObject.getTracks().forEach(track => {
-      track.stop();
-    });
-    qrResult.hidden = false;
-    canvasElement.hidden = true;
-    qrText.innerText = result;
-  }
-};
-
-// Function to draw frames on the canvas
-function tick() {
-  canvasElement.height = video.videoHeight;
-  canvasElement.width = video.videoWidth;
-  canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-
-  if (scanning) {
-    requestAnimationFrame(tick);
-    qrcode.decode();
+    console.error('Navigatorul nu suportă mediaDevices.getUserMedia.');
   }
 }
 
-// Initial call to request camera permission
-requestCameraPermission();
+// Inițializare scanner
+document.addEventListener('DOMContentLoaded', () => {
+  scanner = new Instascan.Scanner({ video: video });
+
+  scanner.addListener('scan', function (content) {
+    // S-a găsit un cod QR
+    console.log('QR code scanned:', content);
+    outputData.innerText = content;
+    qrResult.hidden = false;
+    scanner.stop();
+  });
+
+  Instascan.Camera.getCameras()
+    .then(function (cameras) {
+      if (cameras.length > 0) {
+        // Setează camera frontală ca opțiune implicită
+        startScan();
+      } else {
+        console.error('Nu există camere disponibile.');
+      }
+    })
+    .catch(function (error) {
+      console.error('Eroare la obținerea camerelor:', error);
+    });
+});

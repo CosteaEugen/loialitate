@@ -2,22 +2,19 @@
 <html>
 <head>
   <title>Scanare cod QR</title>
-  <link rel="stylesheet" href="style.css" /> <!-- Update the filename here -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
+  <div id="container">
     <h1>Scanare cod QR</h1>
     <p>Folosește camera dispozitivului tău pentru a scana un cod QR.</p>
-    <video id="qrVideo" playsinline autoplay></video>
-    <div id="qrResult" class="result-container">
-      <p>Cod QR scanat:</p>
-      <p><strong id="qrText"></strong></p>
+    <video id="qr-video" playsinline autoplay></video>
+    <div id="qr-result" hidden>
+      <b>Cod QR scanat:</b> <span id="outputData"></span>
     </div>
-    <button id="scanButton">Începe scanarea</button>
   </div>
 
-  <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+  <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
   <script src="scanare.js"></script>
 </body>
 </html>
