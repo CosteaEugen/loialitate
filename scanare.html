@@ -1,21 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Scanare cod QR</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Scanner Coduri QR</title>
+  <style>
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #reader {
+      width: 600px;
+    }
+    #result {
+      text-align: center;
+      font-size: 1.5rem;
+    }
+  </style>
 </head>
 <body>
-  <div id="container">
-    <h1>Scanare cod QR</h1>
-    <p>Folosește camera dispozitivului tău pentru a scana un cod QR.</p>
-    <video id="qr-video" playsinline autoplay></video>
-    <div id="qr-result" hidden>
-      <b>Cod QR scanat:</b> <span id="outputData"></span>
-    </div>
-    <button id="startScanBtn">Începe scanarea</button>
-  </div>
+  <main>
+    <div id="reader"></div>
+    <div id="result"></div>
+  </main>
 
-  <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="scanare.js"></script>
 </body>
 </html>

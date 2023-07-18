@@ -1,53 +1,25 @@
-const video = document.getElementById('qr-video');
-const qrResult = document.getElementById('qr-result');
-const outputData = document.getElementById('outputData');
+const scanner = new Html5QrcodeScanner('reader', {
+  qrbox: {
+    width: 250,
+    height: 250,
+  },
+  fps: 20,
+});
 
-let scanner;
+scanner.render(success, error);
 
-// Funcție pentru a iniția scanarea
-function startScan() {
-  qrResult.hidden = true;
+function success(result) {
+  document.getElementById('result').innerHTML = `
+    <h2>Scanare reușită!</h2>
+    <p><a href="${result}" target="_blank">${result}</a></p>
+  `;
+  // Aici poți adauga logica pentru acordarea punctelor de loialitate utilizatorului
+  // Dacă ai o bază de date sau un serviciu extern pentru gestionarea punctelor, aici poți efectua solicitarea și actualizarea punctelor utilizatorului.
 
-  // Verificăm dacă browser-ul suportă funcția mediaDevices.getUserMedia
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    // Obținem permisiunea pentru cameră
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-      .then(function (stream) {
-        // Permisiunea pentru cameră a fost acordată
-        video.srcObject = stream;
-        scanner.start(video);
-      })
-      .catch(function (error) {
-        // A apărut o eroare la cererea de permisiune pentru cameră
-        console.error('Eroare la cererea de permisiune pentru cameră:', error);
-      });
-  } else {
-    console.error('Navigatorul nu suportă mediaDevices.getUserMedia.');
-  }
+  // Exemplu: dacă rezultatul scanării este valid (îndeplinește anumite condiții), acordă punctele utilizatorului și actualizează interfața cu un mesaj corespunzător sau alte acțiuni necesare.
 }
 
-// Inițializare scanner
-document.addEventListener('DOMContentLoaded', () => {
-  scanner = new Instascan.Scanner({ video: video });
-
-  scanner.addListener('scan', function (content) {
-    // S-a găsit un cod QR
-    console.log('QR code scanned:', content);
-    outputData.innerText = content;
-    qrResult.hidden = false;
-    scanner.stop();
-  });
-
-  Instascan.Camera.getCameras()
-    .then(function (cameras) {
-      if (cameras.length > 0) {
-        // Setează camera frontală ca opțiune implicită
-        startScan();
-      } else {
-        console.error('Nu există camere disponibile.');
-      }
-    })
-    .catch(function (error) {
-      console.error('Eroare la obținerea camerelor:', error);
-    });
-});
+function error(err) {
+  console.error(err);
+  // Afișează orice eroare în consolă
+}
