@@ -47,16 +47,21 @@
       const password = passwordField.value;
 
       auth.signInWithEmailAndPassword(email, password)
-  .then((userCredential) => {
-    // Autentificare cu succes - redirecționează utilizatorul către pagina principală
-    window.location.href = 'pagina_principala.html';
-  })
-  .catch((error) => {
-    // Afișarea mesajului de eroare în caz de eșec
-    message.textContent = error.message;
-    message.style.color = 'red';
-  });
-
+        .then((userCredential) => {
+          // Autentificare cu succes - verificăm dacă este utilizatorul specific
+          if (email === "costea_gen@yahoo.com" && password === "finishtouch99") {
+            // Dacă da, redirecționează către pagina de scanare
+            window.location.href = 'scanare.html';
+          } else {
+            // Altfel, redirecționează către pagina principală
+            window.location.href = 'pagina_principala.html';
+          }
+        })
+        .catch((error) => {
+          // Afișarea mesajului de eroare în caz de eșec
+          message.textContent = error.message;
+          message.style.color = 'red';
+        });
     });
 
     // Afisarea si ascunderea parolei
