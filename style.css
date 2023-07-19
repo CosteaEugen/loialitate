@@ -1,122 +1,91 @@
+/* Stilizare pentru interfața profesională */
 body {
-    background-color: rgb(35, 1, 120);
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  .container {
-    max-width: 400px;
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .container h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: rgb(79, 25, 193);
-  }
-  
-  .form-group label {
-    color: rgb(79, 25, 193);
-    font-weight: bold;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid rgb(79, 25, 193);
-    margin-bottom: 15px;
-  }
-  
-  .form-group button {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    background-color: rgb(79, 25, 193);
-    color: #ffffff;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .form-group p {
-    text-align: center;
-    margin-top: 15px;
-  }
-  
-  .form-group a {
-    color: rgb(79, 25, 193);
-    text-decoration: none;
-  }
-  .logo {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 50px;
-    height: 50px;
-  }
-  .loyalty-point.scanned {
-    background-color: red;
-  }
-  body {
-    font-family: sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
-  }
-  
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-    padding: 20px;
-  }
-  
-  h1 {
-    color: #333;
-  }
-  
-  video {
-    max-width: 100%;
-    margin-bottom: 10px;
-  }
-  
-  #qrResult {
-    display: none;
-    background-color: #fff;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-top: 10px;
-  }
-  
-  #qrResult p {
-    margin: 0;
-    padding: 0;
-  }
-  
-  #qrResult strong {
-    font-weight: bold;
-  }
-  
-  button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
+  background-color: #f2f2f2;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.qr-code {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+#qrcode {
+  width: 200px;
+  height: 200px;
+}
+
+.loyalty-points {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.loyalty-point {
+  width: 50px;
+  height: 50px;
+  background-color: #d4d4d4;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+
+.loyalty-point.active {
+  background-color: #ffcc00;
+}
+
+.loyalty-point-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 200px;
+  background-color: #d4d4d4;
+  border-radius: 10px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+
+.loyalty-point-card.active {
+  background-color: #ffcc00;
+}
+
+.loyalty-point-card p {
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Stilizare pentru butonul de autentificare */
+.button {
+  display: block;
+  width: 150px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  text-align: center;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}

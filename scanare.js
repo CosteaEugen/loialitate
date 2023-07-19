@@ -1,25 +1,62 @@
-const scanner = new Html5QrcodeScanner('reader', {
-  qrbox: {
-    width: 250,
-    height: 250,
-  },
-  fps: 20,
-});
-
-scanner.render(success, error);
-
-function success(result) {
-  document.getElementById('result').innerHTML = `
-    <h2>Scanare reușită!</h2>
-    <p><a href="${result}" target="_blank">${result}</a></p>
-  `;
-  // Aici poți adauga logica pentru acordarea punctelor de loialitate utilizatorului
-  // Dacă ai o bază de date sau un serviciu extern pentru gestionarea punctelor, aici poți efectua solicitarea și actualizarea punctelor utilizatorului.
-
-  // Exemplu: dacă rezultatul scanării este valid (îndeplinește anumite condiții), acordă punctele utilizatorului și actualizează interfața cu un mesaj corespunzător sau alte acțiuni necesare.
+// Funcție pentru a redirecționa către pagina de autentificare
+function redirectToLoginPage() {
+  window.location.href = 'login.html';
 }
 
-function error(err) {
-  console.error(err);
-  // Afișează orice eroare în consolă
+// Inițializarea Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Verificăm dacă utilizatorul este autentificat
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    // Utilizatorul este autentificat, putem începe scanarea
+    initQRCodeScanner(user);
+  } else {
+    // Utilizatorul nu este autentificat, ascundem containerul pentru scanare
+    document.getElementById('reader').style.display = 'none';
+    // Arătăm butonul de autentificare
+    document.getElementsByTagName('button')[0].style.display = 'block';
+  }
+});
+
+// Funcția pentru a trata evenimentul de detectare a unui cod QR
+const onScanSuccess = (qrCodeMessage) => {
+  document.getElementById('result').innerText = qrCodeMessage;
+  updatePointsInDatabase(auth.currentUser, qrCodeMessage);
+};
+
+// Funcția care inițializează scannerul de coduri QR
+function initQRCodeScanner(user) {
+  const html5QrCodeScanner = new Html5QrcodeScanner(
+    'reader', { fps: 10, qrbox: 250 });
+
+  // Setăm funcția de tratare a evenimentului de detectare a codului QR
+  html5QrCodeScanner.render(onScanSuccess);
+}
+
+// Funcția pentru actualizarea punctelor în baza de date
+function updatePointsInDatabase(user, qrCodeMessage) {
+  // Verificăm dacă utilizatorul există în baza de date
+  const userRef = db.collection('users').doc(user.uid);
+  userRef.get().then((doc) => {
+    if (doc.exists) {
+      const userData = doc.data();
+      let points = userData.points || 0;
+      points++;
+
+      // Actualizăm numărul de puncte al utilizatorului în baza de date
+      userRef.update({ points: points }).then(() => {
+        // Afisăm mesajul de succes
+        console.log(`Numărul de puncte actualizat: ${points}`);
+      }).catch((error) => {
+        console.error('Eroare la actualizarea punctelor:', error);
+      });
+    } else {
+      console.error('Utilizatorul nu există în baza de date.');
+    }
+  }).catch((error) => {
+    console.error('Eroare la obținerea datelor utilizatorului:', error);
+  });
 }

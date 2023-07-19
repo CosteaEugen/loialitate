@@ -41,3 +41,57 @@ document.getElementById('registerForm').addEventListener('submit', function(even
       document.getElementById('message').innerHTML = 'A apărut o eroare la înregistrare: ' + error.message;
     });
 });
+const registerForm = document.getElementById('registerForm');
+const nameField = document.getElementById('nameField');
+const emailField = document.getElementById('emailField');
+const passwordField = document.getElementById('passwordField');
+const message = document.getElementById('message');
+
+registerForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const name = nameField.value;
+  const email = emailField.value;
+  const password = passwordField.value;
+
+  // Înregistrarea utilizatorului prin email și parola
+  firebase.auth().createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      // Obținem utilizatorul creat
+      const user = userCredential.user;
+
+      // Adăugăm numele în baza de date
+      return firebase.firestore().collection('users').doc(user.uid).set({
+        name: name,
+        points: 0,
+        scannedPoints: 0,
+        qrCodeValue: generateQRCodeValue(),
+      });
+    })
+    .then(() => {
+      // Autentificare cu succes - redirecționează utilizatorul către pagina principală
+      window.location.href = 'pagina_principala.html';
+    })
+    .catch((error) => {
+      // Eroare la înregistrare - afișează mesajul de eroare corespunzător sau alte acțiuni necesare
+      console.error('Eroare la înregistrare:', error);
+    });
+});
+// Obținem elementul iconiței pentru afișarea/ascunderea parolei
+const togglePassword = document.getElementById('togglePassword');
+
+// Adăugăm evenimentul de click pe iconiță
+togglePassword.addEventListener('click', () => {
+  const passwordField = document.getElementById('passwordField');
+  // Verificăm starea câmpului de parolă
+  if (passwordField.type === 'password') {
+    // Dacă parola este ascunsă, o afișăm
+    passwordField.type = 'text';
+    togglePassword.classList.remove('fa-eye');
+    togglePassword.classList.add('fa-eye-slash');
+  } else {
+    // Dacă parola este afișată, o ascundem
+    passwordField.type = 'password';
+    togglePassword.classList.remove('fa-eye-slash');
+    togglePassword.classList.add('fa-eye');
+  }
+});

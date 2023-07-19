@@ -24,3 +24,22 @@ loginForm.addEventListener('submit', (event) => {
       });
   }
 });
+// Obținem elementul iconiței pentru afișarea/ascunderea parolei
+const togglePassword = document.getElementById('togglePassword');
+
+// Adăugăm evenimentul de click pe iconiță
+togglePassword.addEventListener('click', () => {
+  const passwordField = document.getElementById('passwordField');
+  // Verificăm starea câmpului de parolă
+  if (passwordField.type === 'password') {
+    // Dacă parola este ascunsă, o afișăm
+    passwordField.type = 'text';
+    togglePassword.classList.remove('fa-eye');
+    togglePassword.classList.add('fa-eye-slash');
+  } else {
+    // Dacă parola este afișată, o ascundem
+    passwordField.type = 'password';
+    togglePassword.classList.remove('fa-eye-slash');
+    togglePassword.classList.add('fa-eye');
+  }
+});
